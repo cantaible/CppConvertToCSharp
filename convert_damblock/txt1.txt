@@ -1,0 +1,66 @@
+if(m_currentlayer>m_damlayer.GetUpperBound())	//结束
+		return;
+	CDamlayer* player=NULL;
+	player=m_damlayer[m_currentlayer];
+	double t=0;;	//推断出下一层的需要的工作时间
+	double vol=0;	
+	int cirnum=m_belongcircuit.GetUpperBound();
+	CCircuit* pcir=NULL;
+	cenctr=FALSE;
+	
+	//for(int i=0;i<=cirnum;i++)
+		//m_tension+=pcir->m_circuitprodu;
+	//m_tension=m_tension*m_vconvert;	//单位转换为 压实方/分
+
+	if (layerover==TRUE) //由于坝块层填筑结束引起的
+	{
+		//damprodu();		//求出上坝生强度
+		vol=player->m_vol-player->m_completevol;
+		nextlayertime=vol/m_todamproduct;
+		//ASSERT(fabs(nextlayertime)<10000);
+		alticonstrain(m_simuover,player->m_ealti);
+	}
+	else	//有回路结束，也需要重新判断
+	{
+		CCircuit* pcir=NULL;
+		pcir=m_belongcircuit[0];
+		double pro=0;
+		double tension=0;
+		tension=m_todamproduct;	//原来的上坝强度
+		damprodu();
+		pro=m_todamproduct/tension;	//车辆减少，所以利用率需要增加
+		ASSERT(pro<1);
+		double carpro=0;
+		double last=0;
+		last=pcir->m_carpro;
+		carpro=pro*last;
+		if(m_todamproduct<0.000001)
+		int ddddddd=1;
+		ASSERT(fabs(m_todamproduct)>0.000001);
+		if (carpro<1)	//车辆利用率达到极限，需调整
+		{
+			//vol=m_cirunloadvol-m_completevol;	//该层已经填筑的体积
+			for(int i=0;i<=m_belongcircuit.GetUpperBound();i++)
+			{
+				pcir=m_belongcircuit[i];
+				if(pcir->m_circuitend==FALSE)
+					pcir->m_carpro=1;
+			}
+			m_todamproduct=m_todamproduct*last;
+			vol=player->m_vol-player->m_completevol;	//该层剩下的体积
+			nextlayertime=vol/m_todamproduct;
+			ASSERT(fabs(nextlayertime)>0.00001);
+  			alticonstrain(m_simuover,player->m_ealti);
+		}
+		else
+		{
+			for(int i=0;i<=m_belongcircuit.GetUpperBound();i++)
+			{
+				pcir=m_belongcircuit[i];
+				if(pcir->m_circuitend==FALSE)
+					pcir->m_carpro=carpro;
+				ASSERT(pcir->m_carpro<100000);
+			}
+			m_todamproduct=tension;
+		}
+	}
