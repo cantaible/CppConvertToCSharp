@@ -1,0 +1,66 @@
+if(currentLayer>damLayer.Count)	//结束
+		return;
+	DamLayer* player=null;
+	player=damLayer[currentLayer];
+	double t=0;;	//推断出下一层的需要的工作时间
+	double vol=0;	
+	int cirnum=belongCircuit.Count;
+	Circuit* pcir=null;
+	cenCtr=false;
+	
+	//for(int i=0;i<=cirnum;i++)
+		//m_tension+=pcir.circuitProdu;
+	//m_tension=m_tension*vConvert;	//单位转换为 压实方/分
+
+	if (layerover==true) //由于坝块层填筑结束引起的
+	{
+		//DamProdu();		//求出上坝生强度
+		vol=player.vol-player.completeVol;
+		nextLayerTime=vol/toDamProduct;
+		//ASSERT(fabs(nextLayerTime)<10000);
+		AltiConstrain(simOver,player.ealti);
+	}
+	else	//有回路结束，也需要重新判断
+	{
+		Circuit* pcir=null;
+		pcir=belongCircuit[0];
+		double pro=0;
+		double tension=0;
+		tension=toDamProduct;	//原来的上坝强度
+		DamProdu();
+		pro=toDamProduct/tension;	//车辆减少，所以利用率需要增加
+		ASSERT(pro<1);
+		double carpro=0;
+		double last=0;
+		last=pcir.carPro;
+		carpro=pro*last;
+		if(toDamProduct<0.000001)
+		int ddddddd=1;
+		ASSERT(fabs(toDamProduct)>0.000001);
+		if (carpro<1)	//车辆利用率达到极限，需调整
+		{
+			//vol=cirUnloadVol-completeVol;	//该层已经填筑的体积
+			for(int i=0;i<=belongCircuit.Count;i++)
+			{
+				pcir=belongCircuit[i];
+				if(pcir.circuitEnd==false)
+					pcir.carPro=1;
+			}
+			toDamProduct=toDamProduct*last;
+			vol=player.vol-player.completeVol;	//该层剩下的体积
+			nextLayerTime=vol/toDamProduct;
+			ASSERT(fabs(nextLayerTime)>0.00001);
+  			AltiConstrain(simOver,player.ealti);
+		}
+		else
+		{
+			for(int i=0;i<=belongCircuit.Count;i++)
+			{
+				pcir=belongCircuit[i];
+				if(pcir.circuitEnd==false)
+					pcir.carPro=carpro;
+				ASSERT(pcir.carPro<100000);
+			}
+			toDamProduct=tension;
+		}
+	}
